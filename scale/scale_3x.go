@@ -41,21 +41,22 @@ func kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7, n8
 		return n2, n5, n6, n7, n8
 	}
 
-	e := yuvDifference(pe, pc, scaleAlpha) + yuvDifference(pe, pg, scaleAlpha) + yuvDifference(pi, h5, scaleAlpha) + yuvDifference(pi, f4, scaleAlpha) + (4.0 * yuvDifference(ph, pf, scaleAlpha))
-	i := yuvDifference(ph, pd, scaleAlpha) + yuvDifference(ph, i5, scaleAlpha) + yuvDifference(pf, i4, scaleAlpha) + yuvDifference(pf, pb, scaleAlpha) + (4.0 * yuvDifference(pe, pi, scaleAlpha))
+	e := yuvDifference(pe, pc, scaleAlpha) + yuvDifference(pe, pg, scaleAlpha) + yuvDifference(pi, h5, scaleAlpha) + yuvDifference(pi, f4, scaleAlpha) + 4.0*yuvDifference(ph, pf, scaleAlpha)
+	i := yuvDifference(ph, pd, scaleAlpha) + yuvDifference(ph, i5, scaleAlpha) + yuvDifference(pf, i4, scaleAlpha) + yuvDifference(pf, pb, scaleAlpha) + 4.0*yuvDifference(pe, pi, scaleAlpha)
 
-	state := e < i && (!isEqual(pf, pb, scaleAlpha) && !isEqual(pf, pc, scaleAlpha) || !isEqual(ph, pd, scaleAlpha) && !isEqual(ph, pg, scaleAlpha) || isEqual(pe, pi, scaleAlpha) && (!isEqual(pf, f4, scaleAlpha) && !isEqual(pf, i4, scaleAlpha) || !isEqual(ph, h5, scaleAlpha) && !isEqual(ph, i5, scaleAlpha)) || isEqual(pe, pg, scaleAlpha) || isEqual(pe, pc, scaleAlpha))
+	state := (e < i) && (!isEqual(pf, pb, scaleAlpha) && !isEqual(pf, pc, scaleAlpha) || !isEqual(ph, pd, scaleAlpha) && !isEqual(ph, pg, scaleAlpha) || isEqual(pe, pi, scaleAlpha) && (!isEqual(pf, f4, scaleAlpha) && !isEqual(pf, i4, scaleAlpha) || !isEqual(ph, h5, scaleAlpha) && !isEqual(ph, i5, scaleAlpha)) || isEqual(pe, pg, scaleAlpha) || isEqual(pe, pc, scaleAlpha))
 	if state {
 		ke := yuvDifference(pf, pg, scaleAlpha)
 		ki := yuvDifference(ph, pc, scaleAlpha)
 		ex2 := pe != pc && pb != pc
 		ex3 := pe != pg && pd != pg
-		px := func() uint32 {
-			if yuvDifference(pe, pf, scaleAlpha) <= yuvDifference(pe, ph, scaleAlpha) {
-				return pf
-			}
-			return ph
-		}()
+
+		var px uint32
+		if yuvDifference(pe, pf, scaleAlpha) <= yuvDifference(pe, ph, scaleAlpha) {
+			px = pf
+		} else {
+			px = ph
+		}
 
 		if (ke*2 <= ki) && ex3 && (ke >= ki*2) && ex2 {
 			result := leftUp3X(n7, n5, n6, n2, n8, px, blendColors)
@@ -70,14 +71,12 @@ func kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7, n8
 			result := dia3X(n8, n5, n7, px, blendColors)
 			n8, n5, n7 = result[0], result[1], result[2]
 		}
-
 	} else if e <= i {
-		n8 = alphaBlend128W(n8, func() uint32 {
-			if yuvDifference(pe, pf, scaleAlpha) <= yuvDifference(pe, ph, scaleAlpha) {
-				return pf
-			}
-			return ph
-		}(), blendColors)
+		if yuvDifference(pe, pf, scaleAlpha) <= yuvDifference(pe, ph, scaleAlpha) {
+			n8 = alphaBlend128W(n8, pf, blendColors)
+		} else {
+			n8 = alphaBlend128W(n8, ph, blendColors)
+		}
 	}
 	return n2, n5, n6, n7, n8
 }
@@ -85,7 +84,6 @@ func kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7, n8
 func computeXbr3x(oriPixelView []uint32, oriX int, oriY int, oriW int, oriH int, dstPixelView []uint32, dstX int, dstY int, dstW int, blendColors, scaleAlpha bool) {
 	relatedPoints := getRelatedPoints(oriPixelView, oriX, oriY, oriW, oriH)
 	a1, b1, c1, a0, pa, pb, pc, c4, d0, pd, pe, pf, f4, g0, pg, ph, pi, i4, g5, h5, i5 := relatedPoints[0], relatedPoints[1], relatedPoints[2], relatedPoints[3], relatedPoints[4], relatedPoints[5], relatedPoints[6], relatedPoints[7], relatedPoints[8], relatedPoints[9], relatedPoints[10], relatedPoints[11], relatedPoints[12], relatedPoints[13], relatedPoints[14], relatedPoints[15], relatedPoints[16], relatedPoints[17], relatedPoints[18], relatedPoints[19], relatedPoints[20]
-
 	e0, e1, e2, e3, e4, e5, e6, e7, e8 := pe, pe, pe, pe, pe, pe, pe, pe, pe
 
 	e2, e5, e6, e7, e8 = kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, e2, e5, e6, e7, e8, blendColors, scaleAlpha)

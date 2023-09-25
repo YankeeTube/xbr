@@ -43,9 +43,11 @@ func kernel4Xv2(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n15, n14, n11, n
 	e := yuvDifference(pe, pc, scaleAlpha) + yuvDifference(pe, pg, scaleAlpha) + yuvDifference(pi, h5, scaleAlpha) + yuvDifference(pi, f4, scaleAlpha) + 4.0*yuvDifference(ph, pf, scaleAlpha)
 	i := yuvDifference(ph, pd, scaleAlpha) + yuvDifference(ph, i5, scaleAlpha) + yuvDifference(pf, i4, scaleAlpha) + yuvDifference(pf, pb, scaleAlpha) + 4.0*yuvDifference(pe, pi, scaleAlpha)
 
-	px := ph
+	var px uint32
 	if yuvDifference(pe, pf, scaleAlpha) <= yuvDifference(pe, ph, scaleAlpha) {
 		px = pf
+	} else {
+		px = ph
 	}
 
 	if e < i && (!isEqual(pf, pb, scaleAlpha) && !isEqual(ph, pd, scaleAlpha) || isEqual(pe, pi, scaleAlpha) && (!isEqual(pf, i4, scaleAlpha) && !isEqual(ph, i5, scaleAlpha)) || isEqual(pe, pg, scaleAlpha) || isEqual(pe, pc, scaleAlpha)) {
