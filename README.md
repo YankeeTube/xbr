@@ -1,6 +1,7 @@
 # XBR Pixel Scale on Golang
 Unfortunately, `xbr` algorithm is not being shared in Golang.  
-So I saw this [repository](https://github.com/joseprio/xBRjs/tree/master) written in JS and implemented it in Go language.
+So I saw this [repository](https://github.com/joseprio/xBRjs/tree/master) written in JS and implemented it in Go language.  
+I couldn't solve the `3x`. but `2x` and `4x` operate normally.
 
 ## Image Compare
 1. original
