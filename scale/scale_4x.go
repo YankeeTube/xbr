@@ -105,14 +105,14 @@ func computeXbr4x(oriPixelView []uint32, oriX, oriY, oriW, oriH int, dstPixelVie
 	dstPixelView[dstX+3+(dstY+3)*dstW] = ef
 }
 
-func xbr4X(img image.Image) image.Image {
+func xbr4X(img image.Image, blend, alpha bool) image.Image {
 	pixelArray := imageToUint32Array(img)
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
 	scaledPixelArray := make([]uint32, width*4*height*4)
 	for c := 0; c < width; c++ {
 		for d := 0; d < height; d++ {
-			computeXbr4x(pixelArray, c, d, width, height, scaledPixelArray, c*4, d*4, width*4, true, true)
+			computeXbr4x(pixelArray, c, d, width, height, scaledPixelArray, c*4, d*4, width*4, blend, alpha)
 		}
 	}
 	return intArrayToImage(scaledPixelArray, width*4, height*4)

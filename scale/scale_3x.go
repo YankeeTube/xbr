@@ -64,7 +64,7 @@ func kernel3X(pe, pi, ph, pf, pg, pc, pd, pb, f4, i4, h5, i5, n2, n5, n6, n7, n8
 		} else if (ke*2 <= ki) && ex3 {
 			result := left3X(n7, n5, n6, n8, px, blendColors)
 			n7, n5, n6, n8 = result[0], result[1], result[2], result[3]
-		} else if ke >= ki*2 && ex2 {
+		} else if ke >= (ki*2) && ex2 {
 			result := up3X(n5, n7, n2, n8, px, blendColors)
 			n5, n7, n2, n8 = result[0], result[1], result[2], result[3]
 		} else {
@@ -102,14 +102,14 @@ func computeXbr3x(oriPixelView []uint32, oriX int, oriY int, oriW int, oriH int,
 	dstPixelView[dstX+2+(dstY+2)*dstW] = e8
 }
 
-func xbr3X(img image.Image) image.Image {
+func xbr3X(img image.Image, blend, alpha bool) image.Image {
 	pixelArray := imageToUint32Array(img)
 	width := img.Bounds().Max.X
 	height := img.Bounds().Max.Y
 	scaledPixelArray := make([]uint32, width*3*height*3)
 	for c := 0; c < width; c++ {
 		for d := 0; d < height; d++ {
-			computeXbr3x(pixelArray, c, d, width, height, scaledPixelArray, c*3, d*3, width*3, true, false)
+			computeXbr3x(pixelArray, c, d, width, height, scaledPixelArray, c*3, d*3, width*3, blend, alpha)
 		}
 	}
 	return intArrayToImage(scaledPixelArray, width*3, height*3)

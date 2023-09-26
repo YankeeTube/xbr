@@ -46,11 +46,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	res := scale.Xbr(img, 2)
-	res3 := scale.Xbr(img, 3)
-	res4 := scale.Xbr(img, 4)
+	res := scale.Xbr(img, 2, true, true)
+	res3 := scale.Xbr(img, 3, true, true)  // not work
+	res4 := scale.Xbr(img, 4, true, true)
 	_ = saveImageAsPNG(res, "output2.png")
-	_ = saveImageAsPNG(res3, "output3.png")
+	_ = saveImageAsPNG(res3, "output3.png") // not work
 	_ = saveImageAsPNG(res4, "output4.png")
 }
 ```
